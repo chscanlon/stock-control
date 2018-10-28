@@ -25,6 +25,15 @@ Route::post('/file-upload','StocktakeController@process');
 
 Route::get('/product-summary','ProductController@summary');
 
+Route::get('/check-order','OrderController@orderCheckIn');
+
+Route::post('/check-order','OrderController@processOrderCheckIn');
+
+Route::get('/order','OrderController@index');
+
+Route::get('/create-order','OrderController@createLorealOrder');
+
+Route::get('/confirm-order','OrderController@confirmLorealOrder');
 
 // Route::get('/stocktakeList', function () {
 //

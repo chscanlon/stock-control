@@ -19,8 +19,8 @@ class CreateProductsTable extends Migration
             $table->string('supplier')->default('')->comment("eg L'Oreal");
             $table->string('barcode')->default('');
             $table->string('product_range')->default('');
-            $table->string('display_name')->default('')->unique();
-            $table->string('order_name')->default('');
+            $table->string('display_name')->default('')->unique()->comment('Name used to describe this product in Timely');
+            $table->string('order_name')->default('')->comment("Name by which the supplier refers to this product");
             $table->string('supplier_sequence')->default('');
             $table->boolean('discontinued')->default(false);
             $table->string('product_usage')->default('')->comment("eg Professional, Retail");

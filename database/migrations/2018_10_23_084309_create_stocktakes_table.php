@@ -16,13 +16,9 @@ class CreateStocktakesTable extends Migration
         Schema::create('stocktakes', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-            $table->integer('product_id');
-            $table->integer('stocktake_event_id');
-            $table->integer('max_stock')->nullable($value = true);
-            $table->integer('available_stock')->nullable($value = true);
-            $table->integer('items_to_order')->nullable($value = true);
-            $table->decimal('cost_price', 8, 2)->nullable($value = true);
-            $table->decimal('retail_price', 8, 2)->nullable($value = true);
+            $table->dateTime('stocktake_date');
+            $table->string('stock_level_import_filename')->unique();
+            $table->integer('product_count');
         });
     }
 
