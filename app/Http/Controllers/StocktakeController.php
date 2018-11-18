@@ -12,19 +12,29 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class StocktakeController extends Controller
 {
-    //
+
+
+  /**
+   * Create a new controller instance.
+   *
+   * @return void
+   */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
 
     protected $stocktakeId;
 
-    public function upload(Request $request)
+    public function index(Request $request)
     {
-        return view('file-upload');
+        return view('stocktake.stocktake-management');
     }
 
 
     public function process(Request $request)
     {
-        $path = $request->file('stock')->store('stocktakes');
+        $path = $request->file('stockLevelReport')->store('stocktakes');
         $importedRows = $this->importStocktakeFile($path);
 
         // ProductName (aka display_name) should be unique but this is not enforced in Timely so need check if the import file has any duplicates
@@ -115,46 +125,4 @@ class StocktakeController extends Controller
 
         return $missingProducts;
     }
-
-    protected function parseDisplayName($displayName)
-    {
-        if (substr($displayName, 0, 11) == 'Majirel Mix') {
-            return ["L'Oreal", "Majirel Mix", "Professional", "03.07"];
-        } elseif (substr($displayName, 0, 17) == 'Majirel High Lift') {
-            return ["L'Oreal", "Majirel High Lift", "Professional", "03.03"];
-        } elseif (substr($displayName, 0, 14) == 'Majirel Metals') {
-            return ["L'Oreal", "Majirel Metals", "Professional", "03.05"];
-        } elseif (substr($displayName, 0, 14) == 'Majirel Cool Cover') {
-            return ["L'Oreal", "Majirel Cool Cover", "Professional", "03.02"];
-        } elseif (substr($displayName, 0, 7) == 'Majirel') {
-            return ["L'Oreal", "Majirel", "Professional", "03.01"];
-        } elseif (substr($displayName, 0, 12) == 'Inoa Supreme') {
-            return ["L'Oreal", "Inoa Supreme", "Professional", "02.03"];
-        } elseif (substr($displayName, 0, 4) == 'Inoa') {
-            return ["L'Oreal", "Inoa", "Professional", "02.01"];
-        } elseif (substr($displayName, 0, 12) == 'Dia Richesse') {
-            return ["L'Oreal", "Dia Richesse", "Professional", "04.01"];
-        } elseif (substr($displayName, 0, 9) == 'Dia Light') {
-            return ["L'Oreal", "Dia Light", "Professional", "04.02"];
-        } elseif (substr($displayName, 0, 12) == 'Majicontrast') {
-            return ["L'Oreal", "Majicontrast", "Professional", "03.08"];
-        } elseif (substr($displayName, 0, 9) == 'Majirouge') {
-            return ["L'Oreal", "Majirouge", "Professional", "03.04"];
-        } elseif (substr($displayName, 0, 6) == 'LOR SX') {
-            return ["L'Oreal", "Serioxyl", "Retail", ""];
-        } elseif (substr($displayName, 0, 6) == 'LOR TA') {
-            return ["L'Oreal", "Techni Art", "Retail", ""];
-        } elseif (substr($displayName, 0, 6) == 'LOR SE') {
-            return ["L'Oreal", "Serie Expert", "Retail", ""];
-        } elseif (substr($displayName, 0, 6) == 'LOR PF') {
-            return ["L'Oreal", "Profiber", "Retail", ""];
-        } elseif (substr($displayName, 0, 3) == 'MOR') {
-            return ["Haircare Australia", "Morrocan Oil", "", ""];
-        } elseif (substr($displayName, 0, 3) == 'NAK') {
-            return ["NAK", "NAK", "Retail", ""];
-        } else {
-            return ["Unknown", "Unknown", "", ""];
-        }
-    }
-
 }

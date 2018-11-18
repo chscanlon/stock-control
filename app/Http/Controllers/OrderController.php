@@ -2,119 +2,134 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
-use Carbon\Carbon;
-use App\Product;
 use App\Order;
 use App\OrderItem;
+use App\Product;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class OrderController extends Controller
 {
-    protected $stockAfterArray;
-
-    public function index(Request $request)
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
     {
-        return view('order.order-management');
+        $this->middleware('auth');
     }
 
-    public function orderCheckIn(Request $request)
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
     {
-        return view('order.check-order');
+        $orders = Order::all();
+        return view('order.index', compact('orders'));
     }
 
-    public function processOrderCheckIn(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        $path = $request->file('stockBeforeOrderUpdate')->store('stocktakes');
-        $stockBeforeArray = $this->importTimelyStockLevelReport($path);
-
-        $path = $request->file('stockAfterOrderUpdate')->store('stocktakes');
-        $this->stockAfterArray = $this->importTimelyStockLevelReport($path);
-
-        $orderedProducts = $stockBeforeArray->diffAssoc($this->stockAfterArray);
-        //dd($orderedProducts->all());
-
-        $orderedProducts->transform(function ($item, $key) {
-            $stockAfterCount = $this->stockAfterArray->get($key);
-            return $stockAfterCount - $item;
-        });
-
-        dd($orderedProducts->all());
+        return view('order.create');
     }
 
-    public function createLorealOrder(Request $request)
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
     {
-        $lorealOrders = $this->getLorealOrderQuery();
-        return view('order.loreal-order', compact('lorealOrders'));
-    }
-
-    public function confirmLorealOrder(Request $request)
-    {
-        // this function should....
-        // save the order as new records into the orders and order_items tables
-        // create and save a pdf that describes the order in sufficient detail to email to the supplier
-        // return the user to the order view (this should include a list of active / in-flight orders)
-
         $lorealOrders = $this->getLorealOrderQuery();
         $firstOrder = $lorealOrders->first();
-        $order = new Order;
-        $order->supplier = $firstOrder->supplier;
-        $order->order_date = Carbon::now();
-        $order->status = 'new';
-        $order->item_count = $lorealOrders->count();
-        $order->save();
+        $newOrder = new Order;
+        $newOrder->supplier = $firstOrder->supplier;
+        $newOrder->order_date = Carbon::now();
+        $newOrder->status = 'Draft';
+        $newOrder->item_count = $lorealOrders->count();
+        $newOrder->save();
 
         foreach ($lorealOrders as $lorealOrder) {
-          try {
-            $product = Product::where('id', $lorealOrder->id)->firstOrFail();
+            try {
+                $product = Product::where('id', $lorealOrder->id)->firstOrFail();
 
-            $orderItem = new OrderItem;
-            $orderItem->order()->associate($order);
-            $orderItem->product()->associate($product);
-            $orderItem->supplier = $product->supplier;
-            $orderItem->display_name = $product->display_name;
-            $orderItem->supplier_product_name = $product->order_name;
-            $orderItem->supplier_sequence = $product->supplier_sequence;
-            $orderItem->max_stock = $product->current_max_stock;
-            $orderItem->available_stock = $product->current_stock_available;
-            $orderItem->order_amount = $lorealOrder->ORDER_AMOUNT;
-            $orderItem->cost_price = $product->current_cost_price;
-            $orderItem->total_price = ($product->current_cost_price * $lorealOrder->ORDER_AMOUNT);
-            $orderItem->save();
-
-          } catch (Exception $e) {
-            echo 'Message : ' . $e->getMessage() . PHP_EOL;
-          }
-
+                $orderItem = new OrderItem;
+                $orderItem->order()->associate($newOrder);
+                $orderItem->product()->associate($product);
+                $orderItem->supplier = $product->supplier;
+                $orderItem->display_name = $product->display_name;
+                $orderItem->supplier_product_name = $product->order_name;
+                $orderItem->supplier_sequence = $product->supplier_sequence;
+                $orderItem->max_stock = $product->current_max_stock;
+                $orderItem->available_stock = $product->current_stock_available;
+                $orderItem->order_amount = $lorealOrder->ORDER_AMOUNT;
+                $orderItem->cost_price = $product->current_cost_price;
+                $orderItem->total_price = ($product->current_cost_price * $lorealOrder->ORDER_AMOUNT);
+                $orderItem->save();
+            } catch (Exception $e) {
+                echo 'Message : ' . $e->getMessage() . PHP_EOL;
+            }
         }
 
-        dd($lorealOrders);
+        $orders = Order::all();
+        return view('order.index', compact('orders'));
     }
 
-    protected function importTimelyStockLevelReport($path)
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function show(Order $order)
     {
-        $deleted = DB::delete('delete from stock_level_import');
-        //echo "records deleted from stock_level_import : " . $deleted;
-
-        $qs = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
-                  INTO TABLE stock_level_import
-                  FIELDS TERMINATED BY ','
-                  OPTIONALLY ENCLOSED BY '\"'
-                  LINES TERMINATED BY '\r\n'
-                  IGNORE 4 LINES";
-
-        $query = $qs;
-
-        DB::connection()->getpdo()->exec($query);
-
-        $stock = DB::table('stock_level_import')->select('ProductName', 'StockAvailable')->get();
-
-        return $stock->mapWithKeys(function ($item) {
-            return [$item->ProductName => $item->StockAvailable];
-        });
+        $order->load('orderItems')->orderBy('supplier_sequence');
+        return view('order.show', compact('order'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Order $order)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Order $order)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Order $order)
+    {
+        //
+    }
 
     protected function getLorealOrderQuery()
     {

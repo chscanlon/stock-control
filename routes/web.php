@@ -11,37 +11,30 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/','HomeController@index');
 
-//Route::get('/stocktakeList','StocktakeController@list');
+Route::get('/home','HomeController@index');
 
-//Route::get('/stocktakeDetail','StocktakeController@detail');
+Route::get('/stocktake','StocktakeController@index');
 
-Route::get('/file-upload','StocktakeController@upload');
+Route::post('/stocktake','StocktakeController@process');
 
-Route::post('/file-upload','StocktakeController@process');
-
-Route::get('/product-summary','ProductController@summary');
-
-Route::get('/check-order','OrderController@orderCheckIn');
-
-Route::post('/check-order','OrderController@processOrderCheckIn');
-
-Route::get('/order','OrderController@index');
-
-Route::get('/create-order','OrderController@createLorealOrder');
-
-Route::get('/confirm-order','OrderController@confirmLorealOrder');
-
-// Route::get('/stocktakeList', function () {
+// Route::get('/check-order','OrderController@orderCheckIn');
 //
-//     //$stocktakes = DB::select('SELECT stocktake_date FROM stocktakes GROUP BY stocktake_date;');
+// Route::post('/check-order','OrderController@processOrderCheckIn');
 //
-//     $stocktakes=DB::table('stocktakes')->select('stocktake_date')->distinct()->get();
+// Route::get('/order','OrderController@index');
 //
-//     //dd(compact('stocktakes'));
+// Route::get('/order/{order}','OrderController@detail');
 //
-//     return view('stocktake-list', compact('stocktakes'));
-// });
+// Route::get('/create-order','OrderController@createLorealOrder');
+//
+// Route::get('/confirm-order','OrderController@confirmLorealOrder');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+
+Route::resource('products', 'ProductController');
+
+Route::resource('orders', 'OrderController');
