@@ -24,8 +24,8 @@
                 <a class="nav-link" href="/orders">Orders</a>
             </li>
 
-            <li class="{{ Request::is('stocktake') ? 'nav-item active' : 'nav-item'}}">
-                <a class="nav-link" href="/stocktake">Stocktakes</a>
+            <li class="{{ Request::is('stocktakes') ? 'nav-item active' : 'nav-item'}}">
+                <a class="nav-link" href="/stocktakes">Stocktakes</a>
             </li>
         </ul>
 
