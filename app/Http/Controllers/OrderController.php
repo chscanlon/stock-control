@@ -128,7 +128,10 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        //
+        $order->delete();
+        $orders = Order::all();
+        return view('order.index', compact('orders'));
+
     }
 
     protected function getLorealOrderQuery()

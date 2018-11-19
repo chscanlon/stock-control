@@ -19,30 +19,33 @@
             <th>Order Date</th>
             <th>Status</th>
             <th>Item Count</th>
-            <th>Action</th>
+            <th></th>
+            <th></th>
         </tr>
 
         @foreach ($orders as $order)
-
         <tr>
-            <td> {{$order->id}} </td>
+            <td> <a href="/orders/{{$order->id}}"> {{$order->id}} </a> </td>
             <td> {{$order->supplier}} </td>
             <td> {{$order->order_date}} </td>
             <td> {{$order->status}} </td>
             <td> {{$order->item_count}} </td>
             <td>
-              <a class="btn btn-primary" href="/orders/{{$order->id}}" role="button">Show</a>
-            @if ($order->status = 'Draft')
-              <a class="btn btn-primary" href="/orders/{{$order->id}}" role="button">Delete</a>
-            @endif
+                <a class="btn btn-info" href="/orders/{{$order->id}}" role="button">Show</a>
+            </td>
+            <td>
+                @if ($order->status = 'Draft')
+                <form action="/orders/{{$order->id}}" method="post">
+                    @method('DELETE')
+                    @csrf
+                    <button type="submit" class="btn btn-secondary">Delete</button>
+                </form>
+                @endif
             </td>
         </tr>
-
         @endforeach
-
     </table>
 
 </div>
-
 
 @endsection
