@@ -5,7 +5,7 @@
 
     <h1 class="title">Create Stocktake</h1>
 
-    <p>Stocktakes are performed by uploading a Stock Level report generated from Timely. You first have to run the Stock Level report in Timely and save it in a CSV format. Then use the form below to select the CSV file you saved and upload it into this application.</p>
+    <p>Stocktakes are created by uploading a Stock Level report generated from Timely. First run the Stock Level report in Timely and save it in a CSV format. Then use the form below to select the CSV file you saved and upload it into this application.</p>
 
     <form action="/stocktakes" method="POST">
         @csrf
