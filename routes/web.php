@@ -37,7 +37,11 @@ Route::resource('products', 'ProductController');
 
 Route::resource('orders', 'OrderController');
 
-Route::get('/check-order','OrderController@selectOrderCheckIn');
+//Route::get('/check-order','OrderController@selectOrderCheckIn');
+
+Route::get('/order-check/{order}','OrderController@selectOrderCheckIn');
+
+Route::post('/order-confirm/{order}','OrderController@confirmOrder');
 
 Route::post('/check-order','OrderController@processOrderCheckIn');
 

@@ -10,9 +10,9 @@
         <div class="col">
             <a class="btn btn-primary" href="/orders/create" role="button">New Order</a>
         </div>
-        <div class="col">
+        {{-- <div class="col">
             <a class="btn btn-primary" href="/check-order" role="button">Check Order</a>
-        </div>
+        </div> --}}
     </div>
 
     <table class="table table-sm">
@@ -36,15 +36,20 @@
             <td>
                 <a class="btn btn-info" href="/orders/{{$order->id}}" role="button">Show</a>
             </td>
+            @if (($order->status) === 'Confirmed')
             <td>
-                @if ($order->status = 'Draft')
+                <a class="btn btn-info" href="/order-check/{{$order->id}}" role="button">Check In</a>
+            </td>
+            @endif
+            @if (($order->status) === 'Draft')
+            <td>
                 <form action="/orders/{{$order->id}}" method="post">
                     @method('DELETE')
                     @csrf
                     <button type="submit" class="btn btn-secondary">Delete</button>
                 </form>
-                @endif
             </td>
+            @endif
         </tr>
         @endforeach
     </table>

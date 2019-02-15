@@ -132,15 +132,28 @@ class OrderController extends Controller
         $orders = Order::all();
         return view('order.index', compact('orders'));
     }
+    /**
+     * Update the status of the specified order to confrimed.
+     *
+     * @param  \App\Order  $order
+     * @return \Illuminate\Http\Response
+     */
+    public function confirmOrder(Order $order)
+    {
+        $order->status = 'Confirmed';
+        $order->save();
+        $orders = Order::all();
+        return view('order.index', compact('orders'));
+    }
 
     /**
      * Show the form to select stock reports pre and post order check-in.
      *
      * @return \Illuminate\Http\Response
      */
-    public function selectOrderCheckIn()
+    public function selectOrderCheckIn(Order $order)
     {
-        return view('order.check-order');
+        return view('order.check-order', compact('order'));
     }
 
     public function processOrderCheckIn(Request $request)
@@ -183,7 +196,7 @@ class OrderController extends Controller
         return $stock->mapWithKeys(function ($item) {
             return [$item->ProductName => $item->StockAvailable];
         });
-    }    
+    }
 
     protected function getLorealOrderQuery()
     {

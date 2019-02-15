@@ -26,6 +26,14 @@
 
     </table>
 
+    <div class="row my-2">
+        <div class="col">
+          <form action="/order-confirm/{{$order->id}}" method="post">
+              @csrf
+              <button type="submit" class="btn btn-secondary">Confirm Order</button>
+          </form>
+        </div>
+    </div>
 
     <table class="table table-sm">
         <tr>
