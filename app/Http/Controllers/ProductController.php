@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Product;
 use Illuminate\Http\Request;
+use Freshbitsweb\Laratables\Laratables;
 
 class ProductController extends Controller
 {
@@ -16,7 +17,7 @@ class ProductController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
     /**
      * Display a listing of the resource.
      *
@@ -24,8 +25,15 @@ class ProductController extends Controller
      */
     public function index()
     {
-        $products = Product::all();
-        return view('product.index', compact('products'));
+        // $products = Product::all();
+        // return view('product.index', compact('products'));
+        return view('product.index');
+
+    }
+
+    public function getProducts()
+    {
+      return Laratables::recordsOf(Product::class);
     }
 
     /**

@@ -19,7 +19,7 @@ Route::get('/','HomeController@index');
 
 // Route::get('/check-order','OrderController@orderCheckIn');
 //
-// Route::post('/check-order','OrderController@processOrderCheckIn');
+
 //
 // Route::get('/order','OrderController@index');
 //
@@ -37,4 +37,10 @@ Route::resource('products', 'ProductController');
 
 Route::resource('orders', 'OrderController');
 
+Route::get('/check-order','OrderController@selectOrderCheckIn');
+
+Route::post('/check-order','OrderController@processOrderCheckIn');
+
 Route::resource('stocktakes', 'StocktakeController');
+
+Route::get('/allProducts', 'ProductController@getProducts')->name('all_products_data');

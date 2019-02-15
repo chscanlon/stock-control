@@ -131,8 +131,59 @@ class OrderController extends Controller
         $order->delete();
         $orders = Order::all();
         return view('order.index', compact('orders'));
-
     }
+
+    /**
+     * Show the form to select stock reports pre and post order check-in.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function selectOrderCheckIn()
+    {
+        return view('order.check-order');
+    }
+
+    public function processOrderCheckIn(Request $request)
+    {
+        $path = $request->file('stockBeforeOrderUpdate')->store('stocktakes');
+        $stockBeforeArray = $this->importTimelyStockLevelReport($path);
+
+        $path = $request->file('stockAfterOrderUpdate')->store('stocktakes');
+        $this->stockAfterArray = $this->importTimelyStockLevelReport($path);
+
+        $orderedProducts = $stockBeforeArray->diffAssoc($this->stockAfterArray);
+        //dd($orderedProducts->all());
+
+        $orderedProducts->transform(function ($item, $key) {
+            $stockAfterCount = $this->stockAfterArray->get($key);
+            return $stockAfterCount - $item;
+        });
+
+        dd($orderedProducts->all());
+    }
+
+    protected function importTimelyStockLevelReport($path)
+    {
+        $deleted = DB::delete('delete from stock_level_import');
+        //echo "records deleted from stock_level_import : " . $deleted;
+
+        $qs = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
+                  INTO TABLE stock_level_import
+                  FIELDS TERMINATED BY ','
+                  OPTIONALLY ENCLOSED BY '\"'
+                  LINES TERMINATED BY '\r\n'
+                  IGNORE 4 LINES";
+
+        $query = $qs;
+
+        DB::connection()->getpdo()->exec($query);
+
+        $stock = DB::table('stock_level_import')->select('ProductName', 'StockAvailable')->get();
+
+        return $stock->mapWithKeys(function ($item) {
+            return [$item->ProductName => $item->StockAvailable];
+        });
+    }    
 
     protected function getLorealOrderQuery()
     {

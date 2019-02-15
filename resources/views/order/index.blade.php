@@ -10,6 +10,9 @@
         <div class="col">
             <a class="btn btn-primary" href="/orders/create" role="button">New Order</a>
         </div>
+        <div class="col">
+            <a class="btn btn-primary" href="/check-order" role="button">Check Order</a>
+        </div>
     </div>
 
     <table class="table table-sm">

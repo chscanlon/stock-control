@@ -5,10 +5,11 @@
 
     <h1 class="title">Products</h1>
 
-    <table class="table table-sm">
+    {{-- <table class="table table-sm">
         <tr>
             <th>Use</th>
             <th>Supplier</th>
+            <th>Product Range</th>
             <th>Display Name</th>
             <th>Max Stock</th>
             <th>Available Stock</th>
@@ -20,16 +21,16 @@
         <tr>
             <td> {{$product->product_usage}} </td>
             <td> {{$product->supplier}} </td>
+            <td> {{$product->product_range}} </td>
             <td> {{$product->display_name}} </td>
             <td> {{$product->current_max_stock}} </td>
             <td> {{$product->current_stock_available}} </td>
             <td> <a class="btn btn-primary" href="/products/{{$product->id}}" role="button">Show</a> </td>
         </tr>
 
-        @endforeach
+        @endforeach --}}
 
-    </table>
-
+        @include('product.all-products')
 
 </div>
 

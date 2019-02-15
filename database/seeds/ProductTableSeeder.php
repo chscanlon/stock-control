@@ -19,14 +19,17 @@ class ProductTableSeeder extends Seeder
 
     public function newProduct()
     {
+
+      $productName = "LOR Pack For Blonde Hair";
       $product = new Product;
 
       $product->supplier = "L'Oreal";
-      $product->product_range = "Colorful Hair";
-      $product->display_name = "Colorful Hair Yellow Sun 90ml";
+      $product->product_range = "";
+      $product->display_name = $productName;
+      $product->order_name = $productName;
       $product->supplier_sequence = "";
-      $product->product_usage = "Professional";
-      $product->current_max_stock = "1";
+      $product->product_usage = "Retail";
+      $product->current_max_stock = "0";
       $product->current_stock_available = "0";
 
       $product->save();

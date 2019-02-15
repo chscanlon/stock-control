@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-
-use App\Stocktake;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Stocktake;
+use App\Product;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
 
 class StocktakeController extends Controller
 {
@@ -50,6 +53,7 @@ class StocktakeController extends Controller
      */
     public function store(Request $request)
     {
+      //dd($request);
       $path = $request->file('stockLevelReport')->store('stocktakes');
       $importedRows = $this->importStocktakeFile($path);
 
@@ -68,11 +72,17 @@ class StocktakeController extends Controller
 
       $this->stocktakeId = $stocktake->id;
 
-      $productsNotInMaster = $this->productTableQA();
+      // Update the products table with data from the imported stock level report
+      // Return a count of products in the stock level report that are not matched to records in the products table
+      $newProducts = $this->updateProductWithStockLevelData();
 
-      if (count($productsNotInMaster) > 0) {
-          dd($productsNotInMaster);
+      if (count($newProducts) > 0) {
+          //dd($productsNotInMaster);
+          return view('product.create-from-timely', compact('newProducts'));
       }
+
+      $this->index();
+
     }
 
     /**
@@ -119,4 +129,45 @@ class StocktakeController extends Controller
     {
         //
     }
+
+    protected function importStocktakeFile($path)
+    {
+        $deleted = DB::delete('delete from stock_level_import');
+        //echo "records deleted from stock_level_import : " . $deleted;
+
+        $query = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
+                  INTO TABLE stock_level_import
+                  FIELDS TERMINATED BY ','
+                  OPTIONALLY ENCLOSED BY '\"'
+                  LINES TERMINATED BY '\r\n'
+                  IGNORE 4 LINES";
+
+        DB::connection()->getpdo()->exec($query);
+
+        return DB::table('stock_level_import')->count();
+    }
+
+    protected function updateProductWithStockLevelData()
+    {
+        $imports = DB::select('SELECT * FROM stock_level_import;');
+
+        $missingProducts = array();
+
+        foreach ($imports as $import) {
+            if (strlen(trim($import->ProductName)) > 0) {
+                try {
+                    $product = Product::where('display_name', '=', trim($import->ProductName))->firstOrFail();
+                    $product->barcode = $import->SkuHandle;
+                    $product->current_stock_available = is_numeric($import->StockAvailable) ? $import->StockAvailable : null;
+                    $product->save();
+                } catch (ModelNotFoundException $e) {
+                    array_push($missingProducts, [trim($import->ProductName), $import->SkuHandle, is_numeric($import->StockAvailable) ? $import->StockAvailable : null]);
+                }
+            }
+        }
+
+        return $missingProducts;
+    }
+
+
 }
