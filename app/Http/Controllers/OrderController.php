@@ -132,6 +132,9 @@ class OrderController extends Controller
         $orders = Order::all();
         return view('order.index', compact('orders'));
     }
+
+    // - - - - - - - CUSTOM FUNCTIONS - - - - - - - - -
+
     /**
      * Update the status of the specified order to confrimed.
      *
@@ -153,50 +156,21 @@ class OrderController extends Controller
      */
     public function selectOrderCheckIn(Order $order)
     {
-        return view('order.check-order', compact('order'));
+        return view('order.check-in', compact('order'));
     }
 
-    public function processOrderCheckIn(Request $request)
+
+    public function processOrderCheckIn(Request $request, $id)
     {
-        $path = $request->file('stockBeforeOrderUpdate')->store('stocktakes');
-        $stockBeforeArray = $this->importTimelyStockLevelReport($path);
+        $order = Order::where('id', $id)->firstOrFail();
 
-        $path = $request->file('stockAfterOrderUpdate')->store('stocktakes');
-        $this->stockAfterArray = $this->importTimelyStockLevelReport($path);
+        $order->setStockBeforeCheckInAttribute ($request->file('stockBeforeOrderUpdate')->store('stocktakes'));
+        $order->setStockAfterCheckInAttribute ($request->file('stockAfterOrderUpdate')->store('stocktakes'));
+        $order->setDeliveredItemCount();
 
-        $orderedProducts = $stockBeforeArray->diffAssoc($this->stockAfterArray);
-        //dd($orderedProducts->all());
-
-        $orderedProducts->transform(function ($item, $key) {
-            $stockAfterCount = $this->stockAfterArray->get($key);
-            return $stockAfterCount - $item;
-        });
-
-        dd($orderedProducts->all());
+        return view('order.delivery', compact('order'));
     }
 
-    protected function importTimelyStockLevelReport($path)
-    {
-        $deleted = DB::delete('delete from stock_level_import');
-        //echo "records deleted from stock_level_import : " . $deleted;
-
-        $qs = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
-                  INTO TABLE stock_level_import
-                  FIELDS TERMINATED BY ','
-                  OPTIONALLY ENCLOSED BY '\"'
-                  LINES TERMINATED BY '\r\n'
-                  IGNORE 4 LINES";
-
-        $query = $qs;
-
-        DB::connection()->getpdo()->exec($query);
-
-        $stock = DB::table('stock_level_import')->select('ProductName', 'StockAvailable')->get();
-
-        return $stock->mapWithKeys(function ($item) {
-            return [$item->ProductName => $item->StockAvailable];
-        });
-    }
 
     protected function getLorealOrderQuery()
     {

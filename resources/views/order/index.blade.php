@@ -38,7 +38,7 @@
             </td>
             @if (($order->status) === 'Confirmed')
             <td>
-                <a class="btn btn-info" href="/order-check/{{$order->id}}" role="button">Check In</a>
+                <a class="btn btn-info" href="/order-check-in-delivery/{{$order->id}}" role="button">Check In</a>
             </td>
             @endif
             @if (($order->status) === 'Draft')

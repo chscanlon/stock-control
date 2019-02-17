@@ -30,8 +30,8 @@
 
         <div class="col">
 
-            <form action="/check-order" method="POST" enctype="multipart/form-data">
-                {{ csrf_field() }}
+            <form action="/order-check-in-delivery/{{$order->id}}" method="POST" enctype="multipart/form-data">
+                @csrf
 
                 <div class="form-group">
                   <label for="stockBeforeOrderUpdate">Stock level report before order update</label>

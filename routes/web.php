@@ -13,22 +13,6 @@
 
 Route::get('/','HomeController@index');
 
-//Route::get('/stocktake','StocktakeController@index');
-
-//Route::post('/stocktake','StocktakeController@process');
-
-// Route::get('/check-order','OrderController@orderCheckIn');
-//
-
-//
-// Route::get('/order','OrderController@index');
-//
-// Route::get('/order/{order}','OrderController@detail');
-//
-// Route::get('/create-order','OrderController@createLorealOrder');
-//
-// Route::get('/confirm-order','OrderController@confirmLorealOrder');
-
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
@@ -37,13 +21,11 @@ Route::resource('products', 'ProductController');
 
 Route::resource('orders', 'OrderController');
 
-//Route::get('/check-order','OrderController@selectOrderCheckIn');
-
-Route::get('/order-check/{order}','OrderController@selectOrderCheckIn');
-
 Route::post('/order-confirm/{order}','OrderController@confirmOrder');
 
-Route::post('/check-order','OrderController@processOrderCheckIn');
+Route::get('/order-check-in-delivery/{order}','OrderController@selectOrderCheckIn');
+
+Route::post('/order-check-in-delivery/{order}','OrderController@processOrderCheckIn');
 
 Route::resource('stocktakes', 'StocktakeController');
 
