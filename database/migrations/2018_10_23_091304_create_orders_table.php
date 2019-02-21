@@ -13,15 +13,17 @@ class CreateOrdersTable extends Migration
      */
     public function up()
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
-            $table->dateTime('order_date');
-            $table->string('status')->default('');
-            $table->string('supplier')->default('');
-            $table->integer('item_count')->nullable($value = true);
-            $table->decimal('total_cost_price', 8, 2)->nullable($value = true);
-        });
+        if (!Schema::hasTable('orders')) {
+            Schema::create('orders', function (Blueprint $table) {
+                $table->increments('id');
+                $table->timestamps();
+                $table->dateTime('order_date');
+                $table->string('status')->default('');
+                $table->string('supplier')->default('');
+                $table->integer('item_count')->nullable($value = true);
+                $table->decimal('total_cost_price', 8, 2)->nullable($value = true);
+            });
+        }
     }
 
     /**

@@ -1,10 +1,12 @@
 <table id="all-products-datatable" class="display" style="width:100%">
     <thead>
         <tr>
-            <th>Use</th>
-            <th>Supplier</th>
+            {{-- <th>Use</th>
+            <th>Supplier</th> --}}
             <th>Product Range</th>
             <th>Display Name</th>
+            <th>Order Name</th>
+            <th>Supplier Sequence</th>
             <th>Max Stock</th>
             <th>Available Stock</th>
         </tr>
@@ -20,17 +22,24 @@
             processing: true,
             responsive: true,
             ajax: "{{ route('all_products_data') }}",
-            columns: [{
-                    name: 'product_usage'
-                },
-                {
-                    name: 'supplier'
-                },
+            columns: [
+                // {
+                //     name: 'product_usage'
+                // },
+                // {
+                //     name: 'supplier'
+                // },
                 {
                     name: 'product_range'
                 },
                 {
                     name: 'display_name'
+                },
+                {
+                    name: 'order_name'
+                },
+                {
+                    name: 'supplier_sequence'
                 },
                 {
                     name: 'current_max_stock',

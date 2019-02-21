@@ -159,6 +159,7 @@ class StocktakeController extends Controller
                     $product = Product::where('display_name', '=', trim($import->ProductName))->firstOrFail();
                     $product->barcode = $import->SkuHandle;
                     $product->current_stock_available = is_numeric($import->StockAvailable) ? $import->StockAvailable : null;
+                    $product->reorder_alert_threshold = is_numeric($import->ReorderAlertThreshold) ? $import->ReorderAlertThreshold : null;
                     $product->save();
                 } catch (ModelNotFoundException $e) {
                     array_push($missingProducts, [trim($import->ProductName), $import->SkuHandle, is_numeric($import->StockAvailable) ? $import->StockAvailable : null]);

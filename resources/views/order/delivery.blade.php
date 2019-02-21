@@ -4,8 +4,7 @@
 
 <div class="container">
 
-    <h1 class="title">Order Detail</h1>
-
+    <h1 class="title">Order Delivery</h1>
     <table class="table table-sm">
         <tr>
             <th>Supplier</th>
@@ -26,6 +25,27 @@
 
     </table>
 
+    @if ($itemsDeliveredNotOrdered->count() > 0)
+
+    <h3 class="title">Items delivered but not ordered</h3>
+    <table class="table table-sm">
+        <tr>
+            <th>Display Name</th>
+            <th>Received Amount</th>
+        </tr>
+
+        @foreach ($itemsDeliveredNotOrdered as $key => $value)
+        <tr>
+            <td> {{$key}} </td>
+            <td> {{$value}} </td>
+        </tr>
+        @endforeach
+
+    </table>
+
+    @endif
+
+    <h3 class="title">Items missing from order</h3>
     <table class="table table-sm">
         <tr>
             <th>Display Name</th>
@@ -35,11 +55,35 @@
 
         @foreach ($order->orderItems as $orderItem)
 
+        @if ($orderItem->order_amount > $orderItem->delivered_amount)
         <tr>
-          <td> {{$orderItem->display_name}} </td>
-          <td> {{$orderItem->order_amount}} </td>
-          <td> {{$orderItem->delivered_amount}} </td>
+            <td> {{$orderItem->display_name}} </td>
+            <td> {{$orderItem->order_amount}} </td>
+            <td> {{$orderItem->delivered_amount}} </td>
         </tr>
+        @endif
+
+        @endforeach
+
+    </table>
+
+    <h3 class="title">Items correctly delivered</h3>
+    <table class="table table-sm">
+        <tr>
+            <th>Display Name</th>
+            <th>Ordered Amount</th>
+            <th>Received Amount</th>
+        </tr>
+
+        @foreach ($order->orderItems as $orderItem)
+
+        @if ($orderItem->order_amount == $orderItem->delivered_amount)
+        <tr>
+            <td> {{$orderItem->display_name}} </td>
+            <td> {{$orderItem->order_amount}} </td>
+            <td> {{$orderItem->delivered_amount}} </td>
+        </tr>
+        @endif
 
         @endforeach
 

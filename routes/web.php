@@ -27,6 +27,8 @@ Route::get('/order-check-in-delivery/{order}','OrderController@selectOrderCheckI
 
 Route::post('/order-check-in-delivery/{order}','OrderController@processOrderCheckIn');
 
+Route::get('/order-export-pdf/{order}','OrderController@exportPdf');
+
 Route::resource('stocktakes', 'StocktakeController');
 
 Route::get('/allProducts', 'ProductController@getProducts')->name('all_products_data');

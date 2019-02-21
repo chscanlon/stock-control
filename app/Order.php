@@ -9,7 +9,7 @@ class Order extends Model
 {
     protected $guarded = ['id'];
 
-    protected $appends = ['stock_before_check_in', 'stock_after_check_in'];
+    protected $stockListAfter;
 
     public function orderItems()
     {
@@ -26,99 +26,69 @@ class Order extends Model
     }
 
     /**
-     * Get the stock_before_check_in array for the order.
+     * Based on Timely stock level reports taken before and after order check in, calculate which and how many items have been delivered. Update the relevant orderItem->delivered_amount with this value.
      *
      * @return array
-     */
-    public function getStockBeforeCheckInAttribute()
-    {
-        return $this->attributes['stock_before_check_in'];
-    }
-
-    /**
-     * Set the stock_before_check_in array for the order.
-     *
-     * @param  array  $stockList
-     * @return void
-     */
-    public function setStockBeforeCheckInAttribute($path)
-    {
-        $stockList = $this->importTimelyStockLevelReport($path);
-        $this->attributes['stock_before_check_in'] = $stockList;
-    }
-
-    /**
-     * Get the stock_after_check_in array for the order.
-     *
-     * @return array
-     */
-    public function getStockAfterCheckInAttribute()
-    {
-        return $this->attributes['stock_after_check_in'];
-    }
-
-    /**
-     * Set the stock_after_check_in array for the order.
-     *
-     * @param  array  $stockList
-     * @return void
-     */
-    public function setStockAfterCheckInAttribute($path)
-    {
-        $stockList = $this->importTimelyStockLevelReport($path);
-        $this->attributes['stock_after_check_in'] = $stockList;
-    }
-
-    /**
-     * Update orderItems with delivered amount.
-     *
-     * @return void
      */
     public function setDeliveredItemCount()
     {
+        $stockListBefore = $this->importTimelyStockLevelReport($this->stock_before_file_path);
+        $this->stockListAfter = $this->importTimelyStockLevelReport($this->stock_after_file_path);
 
-      //get the key/value pairs in $stockBeforeArray that are not identical in $stockAfterArray
-      $orderedProducts = $this->getStockBeforeCheckInAttribute()->diffAssoc($this->getStockAfterCheckInAttribute());
+        //get the key/value pairs in $stockListBefore that are not identical in stockListAfter
+        $receivedProducts = $stockListBefore->diffAssoc($this->stockListAfter);
 
-      //For each item in $orderedProducts modify the item count to be $stockAfterCount - $stockBeforeCount
-      $orderedProducts->transform(function ($item, $key) {
-          $stockAfterCount = $this->getStockAfterCheckInAttribute()->get($key);
-          return $stockAfterCount - $item;
-      });
+        //For each item in $orderedProducts modify the item count to be $stockAfterCount - $stockBeforeCount
+        $receivedProducts->transform(
+                function ($item, $key) {
+                    $stockAfterCount = $this->stockListAfter->get($key);
+                    return $stockAfterCount - $item;
+                }
+              );
+        //dd($receivedProducts);
 
-      foreach ($this->orderItems as $orderItem) {
-        $orderItem ['delivered_amount'] = $orderedProducts->get($orderItem->display_name);
-        $orderItem->save();
-      }
+        $orderedProducts = $this->orderItems->mapWithKeys(function ($item) {
+            return [$item['display_name'] => $item['order_amount']];
+        });
+        //dd($orderedProducts);
 
+        //get the key/value pairs in $receivedProducts that do not exist in $orderedProducts
+        $deliveredNotOrderedProducts = $receivedProducts->diffKeys($orderedProducts);
+
+        foreach ($this->orderItems as $orderItem) {
+            $orderItem->delivered_amount = 0;
+            if (is_numeric($receivedProducts->get($orderItem->display_name))) {
+              $orderItem->delivered_amount = $receivedProducts->get($orderItem->display_name);
+            }
+            $orderItem->save();
+        }
+
+        //$this->status = 'Received';
+        $this->save();
+
+        return $deliveredNotOrderedProducts;
     }
 
-    /**
-     * Set the stock_after_check_in array for the order.
-     *
-     * @param  array  $stockList
-     * @return void
-     */
-     protected function importTimelyStockLevelReport($path)
-     {
-         $deleted = DB::delete('delete from stock_level_import');
-         //echo "records deleted from stock_level_import : " . $deleted;
+    protected function importTimelyStockLevelReport($path)
+    {
+        $deleted = DB::delete('delete from stock_level_import');
+        //echo "records deleted from stock_level_import : " . $deleted;
 
-         $qs = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
+        $qs = "LOAD DATA LOCAL INFILE '../storage/app/" . $path . "'
                    INTO TABLE stock_level_import
                    FIELDS TERMINATED BY ','
                    OPTIONALLY ENCLOSED BY '\"'
                    LINES TERMINATED BY '\r\n'
                    IGNORE 4 LINES";
 
-         $query = $qs;
+        $query = $qs;
 
-         DB::connection()->getpdo()->exec($query);
+        DB::connection()->getpdo()->exec($query);
 
-         $stock = DB::table('stock_level_import')->select('ProductName', 'StockAvailable')->get();
+        $stock = DB::table('stock_level_import')->select('ProductName', 'StockAvailable')->get();
 
-         return $stock->mapWithKeys(function ($item) {
-             return [$item->ProductName => $item->StockAvailable];
-         });
-     }
+        return $stock->mapWithKeys(function ($item) {
+            return [$item->ProductName => $item->StockAvailable];
+        });
+    }
 }

@@ -8,6 +8,7 @@ use App\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use PDF;
 
 class OrderController extends Controller
 {
@@ -164,11 +165,25 @@ class OrderController extends Controller
     {
         $order = Order::where('id', $id)->firstOrFail();
 
-        $order->setStockBeforeCheckInAttribute ($request->file('stockBeforeOrderUpdate')->store('stocktakes'));
-        $order->setStockAfterCheckInAttribute ($request->file('stockAfterOrderUpdate')->store('stocktakes'));
-        $order->setDeliveredItemCount();
+        $order->stock_before_file_path = $request->file('stockBeforeOrderUpdate')->store('stocktakes');
+        $order->stock_after_file_path = $request->file('stockAfterOrderUpdate')->store('stocktakes');
+        $itemsDeliveredNotOrdered = $order->setDeliveredItemCount();
 
-        return view('order.delivery', compact('order'));
+        return view('order.delivery', compact('itemsDeliveredNotOrdered', 'order'));
+    }
+
+    public function exportPdf(Request $request, $id)
+    {
+        $order = Order::where('id', $id)->firstOrFail();
+
+        // Send data to the view using loadView function of PDF facade
+        $pdf = PDF::loadView('order.pdf', compact('order'));
+
+        // If you want to store the generated pdf to the server then you can use the store function
+        //$pdf->save(storage_path().'_filename.pdf');
+
+        // Finally, you can download the file using download function
+        return $pdf->download('order.pdf');
     }
 
 

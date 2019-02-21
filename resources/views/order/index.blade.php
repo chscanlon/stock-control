@@ -37,9 +37,12 @@
                 <a class="btn btn-info" href="/orders/{{$order->id}}" role="button">Show</a>
             </td>
             @if (($order->status) === 'Confirmed')
-            <td>
-                <a class="btn btn-info" href="/order-check-in-delivery/{{$order->id}}" role="button">Check In</a>
-            </td>
+              <td>
+                  <a class="btn btn-info" href="/order-check-in-delivery/{{$order->id}}" role="button">Check In</a>
+              </td>
+              <td>
+                  <a class="btn btn-info" href="/order-export-pdf/{{$order->id}}" role="button">Print PDF</a>
+              </td>
             @endif
             @if (($order->status) === 'Draft')
             <td>

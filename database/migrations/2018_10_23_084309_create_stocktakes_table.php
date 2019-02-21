@@ -13,13 +13,15 @@ class CreateStocktakesTable extends Migration
      */
     public function up()
     {
-        Schema::create('stocktakes', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
-            $table->dateTime('stocktake_date');
-            $table->string('stock_level_import_filename')->unique();
-            $table->integer('product_count');
-        });
+        if (!Schema::hasTable('stocktakes')) {
+            Schema::create('stocktakes', function (Blueprint $table) {
+                $table->increments('id');
+                $table->timestamps();
+                $table->dateTime('stocktake_date');
+                $table->string('stock_level_import_filename')->unique();
+                $table->integer('product_count');
+            });
+        }
     }
 
     /**

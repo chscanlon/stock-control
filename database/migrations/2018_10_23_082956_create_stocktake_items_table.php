@@ -13,16 +13,18 @@ class CreateStocktakeItemsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stocktake_items', function (Blueprint $table) {
-            $table->increments('id');
-            $table->timestamps();
-            $table->integer('stocktake_id');
-            $table->integer('product_id');
-            $table->integer('max_stock')->nullable($value = true);
-            $table->integer('available_stock')->nullable($value = true);
-            $table->decimal('cost_price', 8, 2)->nullable($value = true);
-            $table->decimal('retail_price', 8, 2)->nullable($value = true);
-        });
+        if (!Schema::hasTable('stocktake_items')) {
+            Schema::create('stocktake_items', function (Blueprint $table) {
+                $table->increments('id');
+                $table->timestamps();
+                $table->integer('stocktake_id');
+                $table->integer('product_id');
+                $table->integer('max_stock')->nullable($value = true);
+                $table->integer('available_stock')->nullable($value = true);
+                $table->decimal('cost_price', 8, 2)->nullable($value = true);
+                $table->decimal('retail_price', 8, 2)->nullable($value = true);
+            });
+        }
     }
 
     /**
