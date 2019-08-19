@@ -10,7 +10,6 @@ use App\Product;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-
 class StocktakeController extends Controller
 {
 
@@ -53,36 +52,36 @@ class StocktakeController extends Controller
      */
     public function store(Request $request)
     {
-      //dd($request);
-      $path = $request->file('stockLevelReport')->store('stocktakes');
-      $importedRows = $this->importStocktakeFile($path);
+        //dd($request);
+        $path = $request->file('stockLevelReport')->store('stocktakes');
+        $importedRows = $this->importStocktakeFile($path);
 
-      // ProductName (aka display_name) should be unique but this is not enforced in Timely so need check if the import file has any duplicates
-      $productNames = DB::select('SELECT ProductName FROM stock_level_import GROUP BY ProductName HAVING Count(ProductName) > ?', [1]);
-      if (count($productNames) > 1) {
-          // need to implement a way to handle the times when duplicates are detected
-          dd($productNames);
-      }
+        // ProductName (aka display_name) should be unique but this is not enforced in Timely so need check if the import file has any duplicates
+        $productNames = DB::select('SELECT ProductName FROM stock_level_import GROUP BY ProductName HAVING Count(ProductName) > ?', [1]);
+        if (count($productNames) > 1) {
+            // need to implement a way to handle the times when duplicates are detected
+            dd($productNames);
+        }
 
-      $stocktake = new Stocktake;
-      $stocktake->stock_level_import_filename = $path;
-      $stocktake->stocktake_date = Carbon::now();
-      $stocktake->product_count = $importedRows;
-      $stocktake->save();
+        $stocktake = new Stocktake;
+        $stocktake->stock_level_import_filename = $path;
+        $stocktake->stocktake_date = Carbon::now();
+        $stocktake->product_count = $importedRows;
+        $stocktake->save();
 
-      $this->stocktakeId = $stocktake->id;
+        $this->stocktakeId = $stocktake->id;
 
-      // Update the products table with data from the imported stock level report
-      // Return a count of products in the stock level report that are not matched to records in the products table
-      $newProducts = $this->updateProductWithStockLevelData();
+        // Update the products table with data from the imported stock level report
+        // Return a count of products in the stock level report that are not matched to records in the products table
+        $newProducts = $this->updateProductWithStockLevelData();
 
-      if (count($newProducts) > 0) {
-          //dd($productsNotInMaster);
-          return view('product.create-from-timely', compact('newProducts'));
-      }
 
-      $this->index();
+        if (count($newProducts) > 0) {
+            //dd($productsNotInMaster);
+            return view('product.create-from-timely', compact('newProducts'));
+        }
 
+        $this->index();
     }
 
     /**
@@ -156,7 +155,12 @@ class StocktakeController extends Controller
         foreach ($imports as $import) {
             if (strlen(trim($import->ProductName)) > 0) {
                 try {
-                    $product = Product::where('display_name', '=', trim($import->ProductName))->firstOrFail();
+                    $product = Product::where([
+                          ['display_name', '=', trim($import->ProductName)],
+                          ['timely_product_status', '=', 'active'],
+                        ])->firstOrFail();
+
+                    $product->timely_product_status = 'matched';
                     $product->barcode = $import->SkuHandle;
                     $product->current_stock_available = is_numeric($import->StockAvailable) ? $import->StockAvailable : null;
                     $product->reorder_alert_threshold = is_numeric($import->ReorderAlertThreshold) ? $import->ReorderAlertThreshold : null;
@@ -167,8 +171,25 @@ class StocktakeController extends Controller
             }
         }
 
+        $this->updateUnmatchedProductsToDeleted();
+
         return $missingProducts;
     }
 
+    protected function updateUnmatchedProductsToDeleted()
+    {
+        // this function should be called after a stocktake import
+        // products matched in the stocktake import will have timely_product_status = 'matched'
+        // products not matched in the import will now have timely_product_status = 'active' or 'deleted'
+        // this function updates timely_product_status from 'active' to 'deleted'
+        // and then updates timely_product_status from 'matched' to 'active'
 
+        DB::table('products')
+            ->where('timely_product_status', 'active')
+            ->update(['timely_product_status' => 'deleted']);
+
+        DB::table('products')
+                ->where('timely_product_status', 'matched')
+                ->update(['timely_product_status' => 'active']);
+    }
 }

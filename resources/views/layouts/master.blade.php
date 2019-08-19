@@ -12,7 +12,7 @@
 
     <!-- Bootstrap core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
-    {{-- For Laratables --}}
+    {{-- For Datatables --}}
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.css">
 
     @stack('styles')
@@ -32,7 +32,7 @@
 
             <script src="//code.jquery.com/jquery-3.3.1.min.js"></script>
             <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-            {{-- For Laratables --}}
+            {{-- For Datatables --}}
             <script type="text/javascript" src="//cdn.datatables.net/v/dt/dt-1.10.18/datatables.min.js"></script>
 
             @stack('scripts')
