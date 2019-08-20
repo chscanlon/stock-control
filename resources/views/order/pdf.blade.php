@@ -28,21 +28,21 @@
 
     <table>
         <tr>
-            <th>Supplier</th>
+            {{-- <th>Supplier</th> --}}
             <th>Display Name</th>
             <th>Order Amount</th>
-            <th>Max Stock</th>
-            <th>Available Stock</th>
+            {{-- <th>Max Stock</th>
+            <th>Available Stock</th> --}}
         </tr>
 
         @foreach ($order->orderItems as $orderItem)
 
         <tr>
-            <td> {{$orderItem->supplier}} </td>
+            {{-- <td> {{$orderItem->supplier}} </td> --}}
             <td> {{$orderItem->display_name}} </td>
             <td> {{$orderItem->order_amount}} </td>
-            <td> {{$orderItem->max_stock}} </td>
-            <td> {{$orderItem->available_stock}} </td>
+            {{-- <td> {{$orderItem->max_stock}} </td>
+            <td> {{$orderItem->available_stock}} </td> --}}
         </tr>
 
         @endforeach
