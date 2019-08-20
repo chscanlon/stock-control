@@ -20,7 +20,9 @@ class APIController extends Controller
                           'product_usage',
                           'product_range',
                           'display_name',
-                          'supplier_sequence'
+                          'supplier_sequence',
+                          'current_max_stock',
+                          'current_stock_available'
                           )
                           ->where([
                             ['timely_product_status', 'active'],

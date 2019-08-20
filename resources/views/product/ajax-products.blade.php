@@ -7,6 +7,8 @@
             <th>Product Range</th>
             <th>Display Name</th>
             <th>Supplier Sequence</th>
+            <th>Max Stock</th>
+            <th>Current Stock</th>
         </tr>
     </thead>
 </table>
