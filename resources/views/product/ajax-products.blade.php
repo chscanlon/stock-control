@@ -32,6 +32,12 @@
                 },
                 {
                     data: 'supplier_sequence'
+                },
+                {
+                    data: 'current_max_stock'
+                },
+                {
+                    data: 'current_stock_available'
                 }
             ],
         });
