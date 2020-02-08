@@ -20,14 +20,14 @@ class ProductTableSeeder extends Seeder
     public function newProduct()
     {
 
-      $productName = "LOR Pack For Blonde Hair";
+      $productName = "LOR SE Blondifier Shampoo 300ml";
       $product = new Product;
 
       $product->supplier = "L'Oreal";
       $product->product_range = "";
       $product->display_name = $productName;
       $product->order_name = $productName;
-      $product->supplier_sequence = "";
+      $product->supplier_sequence = "08.041.01";
       $product->product_usage = "Retail";
       $product->current_max_stock = "0";
       $product->current_stock_available = "0";
