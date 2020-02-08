@@ -3,7 +3,7 @@
 
 <div class="container">
 
-    <h1 class="title">L'Oreal Products</h1>
+    <h1 class="title">Products in Timely</h1>
 
     @include('product.ajax-products')
 

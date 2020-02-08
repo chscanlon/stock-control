@@ -39,7 +39,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -189,6 +189,7 @@ return [
         'Crypt' => Illuminate\Support\Facades\Crypt::class,
         'DataTables' => Yajra\DataTables\Facades\DataTables::class,
         'DB' => Illuminate\Support\Facades\DB::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
         'Eloquent' => Illuminate\Database\Eloquent\Model::class,
         'Event' => Illuminate\Support\Facades\Event::class,
         'File' => Illuminate\Support\Facades\File::class,

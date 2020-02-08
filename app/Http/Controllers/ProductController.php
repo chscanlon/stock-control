@@ -24,10 +24,12 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // $products = Product::all();
-        // return view('product.index', compact('products'));
-        return view('product.index');
+        $products = Product::all();
+        $productRanges = $products->sortBy('product_range')->pluck('product_range')->unique();
+        $productUses = $products->sortBy('product_usage')->pluck('product_usage')->unique();
+        $suppliers = $products->sortBy('supplier')->pluck('supplier')->unique();
 
+        return view('product.index', compact('productRanges', 'productUses', 'suppliers'));
     }
 
     /**
@@ -59,7 +61,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+      return view('product.show', ['product' => $product]);
     }
 
     /**

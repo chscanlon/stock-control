@@ -24,7 +24,7 @@ class ProductTableSeeder extends Seeder
       $product = new Product;
 
       $product->supplier = "L'Oreal";
-      $product->product_range = "";
+      $product->product_range = "Serie Expert Blondifier";
       $product->display_name = $productName;
       $product->order_name = $productName;
       $product->supplier_sequence = "08.041.01";

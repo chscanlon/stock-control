@@ -1,12 +1,8 @@
-{{-- @extends('layouts.master') --}}
-{{-- @section('content')
 
-
-<div class="container"> --}}
 
     <h1>Order Detail</h1>
 
-    <table>
+    <table style="border: 1px solid black;">
         <tr>
             <th>Supplier</th>
             <td> {{$order->supplier}} </td>
@@ -26,18 +22,18 @@
 
     </table>
 
-    <table>
-        <tr>
+    <table style="border-collapse: collapse; border: 1px solid black;">
+        <tr style="border: 1px solid black;">
             {{-- <th>Supplier</th> --}}
-            <th>Display Name</th>
-            <th>Order Amount</th>
+            <th style="border: 1px solid black;">Display Name</th>
+            <th style="border: 1px solid black;">Order Amount</th>
             {{-- <th>Max Stock</th>
             <th>Available Stock</th> --}}
         </tr>
 
         @foreach ($order->orderItems as $orderItem)
 
-        <tr>
+        <tr style="border: 1px solid black;">
             {{-- <td> {{$orderItem->supplier}} </td> --}}
             <td> {{$orderItem->display_name}} </td>
             <td> {{$orderItem->order_amount}} </td>
@@ -48,8 +44,3 @@
         @endforeach
 
     </table>
-
-{{-- </div> --}}
-
-{{--
-@endsection --}}

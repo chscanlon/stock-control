@@ -190,7 +190,7 @@ class OrderController extends Controller
     protected function getLorealOrderQuery()
     {
         $query =  Product::select(DB::raw('id, supplier, product_range, display_name, current_max_stock, current_stock_available, (current_max_stock - current_stock_available) AS ORDER_AMOUNT'))
-                            ->where([['supplier', "L'Oreal"], ['discontinued', false]])
+                            ->where([['timely_product_status', 'active'], ['supplier', "L'Oreal"], ['discontinued', false]])
                             ->having('ORDER_AMOUNT', '>', 0)
                             ->orderBy('supplier_sequence')
                             ->get();

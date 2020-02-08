@@ -15,20 +15,17 @@ class APIController extends Controller
      */
     public function getProducts()
     {
-        return datatables(
-            Product::select(
-                          'product_usage',
-                          'product_range',
+        return datatables(Product::select(
+          'id',
+          'supplier',
+          'product_usage',
+          'product_range',
                           'display_name',
-                          'supplier_sequence',
                           'current_max_stock',
                           'current_stock_available'
-                          )
-                          ->where([
-                            ['timely_product_status', 'active'],
-                            ['supplier', "L'Oreal"],
+                          )->where([
                             ['discontinued', 0],
-                          ])
-                          )->toJson();
+                            ['timely_product_status', 'active']
+                          ]))->toJson();
     }
 }

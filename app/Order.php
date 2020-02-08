@@ -21,7 +21,7 @@ class Order extends Model
         // delete all related orderItems
         $this->orderItems()->delete();
 
-        // delete the user
+        // delete the order
         return parent::delete();
     }
 
