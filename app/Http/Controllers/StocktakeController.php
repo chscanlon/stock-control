@@ -190,6 +190,7 @@ class StocktakeController extends Controller
 
                 if(is_null($product)) {
                   // record not found so create a new product instance
+                  $product = new Product;
                   $product->timely_product_id = $import->timely_product_id;
                   $product->display_name = $import->product_name;
                   $product->barcode = $import->sku_handle;
