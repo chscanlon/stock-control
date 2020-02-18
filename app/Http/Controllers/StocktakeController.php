@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Product;
+use App\Stocktake;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Stocktake;
-use App\Product;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 //use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -17,11 +16,11 @@ use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 class StocktakeController extends Controller
 {
 
-  /**
-   * Create a new controller instance.
-   *
-   * @return void
-   */
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->middleware('auth');
@@ -60,7 +59,6 @@ class StocktakeController extends Controller
         $path = $request->file('stockLevelReport')->store('stocktakes');
         $importedRows = $this->importStocktakeFile($path);
 
-
         $stocktake = new Stocktake;
         $stocktake->stock_level_import_filename = $path;
         $stocktake->stocktake_date = Carbon::now();
@@ -87,10 +85,10 @@ class StocktakeController extends Controller
      */
     public function show(Stocktake $stocktake)
     {
-      $newProducts = Product::where('created_in_stocktake_id', $stocktake->id)->get();
-      $deletedProducts = Product::where('deleted_in_stocktake_id', $stocktake->id)->get();
+        $newProducts = Product::where('created_in_stocktake_id', $stocktake->id)->get();
+        $deletedProducts = Product::where('deleted_in_stocktake_id', $stocktake->id)->get();
 
-      return view('stocktake.show', ['stocktake' => $stocktake, 'newProducts' => $newProducts, 'deletedProducts' => $deletedProducts]);
+        return view('stocktake.show', ['stocktake' => $stocktake, 'newProducts' => $newProducts, 'deletedProducts' => $deletedProducts]);
     }
 
     /**
@@ -143,34 +141,34 @@ class StocktakeController extends Controller
         foreach ($worksheet->getRowIterator(10) as $row) {
 
             //If column A contains a hyperlink this is a product record
-            if ($worksheet->getCell('A'.$row->getRowIndex())->hasHyperlink()) {
-                $productId = $this->getTimelyProductIndex($worksheet->getCell('A'.$row->getRowIndex())->getHyperlink()->GetURL());
-                $productName = $worksheet->getCell('A'.$row->getRowIndex())->getValue();
-                $skuHandle = $worksheet->getCell('B'.$row->getRowIndex())->getValue();
-                $locationName = $worksheet->getCell('C'.$row->getRowIndex())->getValue();
-                $stockAvailable = $worksheet->getCell('D'.$row->getRowIndex())->getValue();
-                $alertPoint = $worksheet->getCell('E'.$row->getRowIndex())->getValue();
-                $taxAmount = $worksheet->getCell('F'.$row->getRowIndex())->getValue();
-                $costPrice = $worksheet->getCell('G'.$row->getRowIndex())->getValue();
-                $retailPrice = $worksheet->getCell('H'.$row->getRowIndex())->getValue();
-                $totalCostValue = $worksheet->getCell('I'.$row->getRowIndex())->getValue();
-                $totalRetailValue = $worksheet->getCell('J'.$row->getRowIndex())->getValue();
+            if ($worksheet->getCell('A' . $row->getRowIndex())->hasHyperlink()) {
+                $productId = $this->getTimelyProductIndex($worksheet->getCell('A' . $row->getRowIndex())->getHyperlink()->GetURL());
+                $productName = $worksheet->getCell('A' . $row->getRowIndex())->getValue();
+                $skuHandle = $worksheet->getCell('B' . $row->getRowIndex())->getValue();
+                $locationName = $worksheet->getCell('C' . $row->getRowIndex())->getValue();
+                $stockAvailable = $worksheet->getCell('D' . $row->getRowIndex())->getValue();
+                $alertPoint = $worksheet->getCell('E' . $row->getRowIndex())->getValue();
+                $taxAmount = $worksheet->getCell('F' . $row->getRowIndex())->getValue();
+                $costPrice = $worksheet->getCell('G' . $row->getRowIndex())->getValue();
+                $retailPrice = $worksheet->getCell('H' . $row->getRowIndex())->getValue();
+                $totalCostValue = $worksheet->getCell('I' . $row->getRowIndex())->getValue();
+                $totalRetailValue = $worksheet->getCell('J' . $row->getRowIndex())->getValue();
 
                 DB::table('stock_level_xlsx_import')->insert(
                     [
-                      'timely_product_id' => $productId,
-                      'product_name' => $productName,
-                      'sku_handle' => is_null($skuHandle) ? '' : $skuHandle,
-                      'product_location' => is_null($locationName) ? '' : $locationName,
-                      'stock_available' => is_null($stockAvailable) ? '' : $stockAvailable,
-                      'reorder_alert_threshold' => is_null($alertPoint) ? '' : $alertPoint,
-                      'tax_amount' => is_null($taxAmount) ? '' : $taxAmount,
-                      'unit_cost_price' => is_null($costPrice) ? '' : $costPrice,
-                      'unit_retail_price' => is_null($retailPrice) ? '' : $retailPrice,
-                      'total_cost_value' => is_null($totalCostValue) ? '' : $totalCostValue,
-                      'total_retail_value' => is_null($totalRetailValue) ? '' : $totalRetailValue
+                        'timely_product_id' => $productId,
+                        'product_name' => $productName,
+                        'sku_handle' => is_null($skuHandle) ? '' : $skuHandle,
+                        'product_location' => is_null($locationName) ? '' : $locationName,
+                        'stock_available' => is_null($stockAvailable) ? '' : $stockAvailable,
+                        'reorder_alert_threshold' => is_null($alertPoint) ? '' : $alertPoint,
+                        'tax_amount' => is_null($taxAmount) ? '' : $taxAmount,
+                        'unit_cost_price' => is_null($costPrice) ? '' : $costPrice,
+                        'unit_retail_price' => is_null($retailPrice) ? '' : $retailPrice,
+                        'total_cost_value' => is_null($totalCostValue) ? '' : $totalCostValue,
+                        'total_retail_value' => is_null($totalRetailValue) ? '' : $totalRetailValue,
                     ]
-                  );
+                );
             }
         }
 
@@ -186,33 +184,33 @@ class StocktakeController extends Controller
 
         foreach ($imports as $import) {
 
-                $product = Product::where('timely_product_id', $import->timely_product_id)->first();
+            $product = Product::where('timely_product_id', $import->timely_product_id)->first();
 
-                if(is_null($product)) {
-                  // record not found so create a new product instance
-                  $product = new Product;
-                  $product->timely_product_id = $import->timely_product_id;
-                  $product->display_name = $import->product_name;
-                  $product->barcode = $import->sku_handle;
-                  $product->current_max_stock = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
-                  $product->current_stock_available = is_numeric($import->stock_available) ? $import->stock_available : 0;
-                  $product->current_cost_price = is_numeric($import->unit_cost_price) ? $import->unit_cost_price : 0;
-                  $product->current_retail_price = is_numeric($import->unit_retail_price) ? $import->unit_retail_price : 0;
-                  $product->reorder_alert_threshold = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
-                  $product->timely_product_status = 'matched';
-                  $product->created_in_stocktake_id = $this->stocktakeId;
-                  $product->save();
-                } else {
-                  // record was found so update the returned product instance
-                  $product->display_name = $import->product_name;
-                  $product->barcode = $import->sku_handle;
-                  $product->current_stock_available = is_numeric($import->stock_available) ? $import->stock_available : 0;
-                  $product->current_cost_price = is_numeric($import->unit_cost_price) ? $import->unit_cost_price : 0;
-                  $product->current_retail_price = is_numeric($import->unit_retail_price) ? $import->unit_retail_price : 0;
-                  $product->reorder_alert_threshold = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
-                  $product->timely_product_status = 'matched';
-                  $product->save();
-                }
+            if (is_null($product)) {
+                // record not found so create a new product instance
+                $product = new Product;
+                $product->timely_product_id = $import->timely_product_id;
+                $product->display_name = $import->product_name;
+                $product->barcode = $import->sku_handle;
+                $product->current_max_stock = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
+                $product->current_stock_available = is_numeric($import->stock_available) ? $import->stock_available : 0;
+                $product->current_cost_price = is_numeric($import->unit_cost_price) ? $import->unit_cost_price : 0;
+                $product->current_retail_price = is_numeric($import->unit_retail_price) ? $import->unit_retail_price : 0;
+                $product->reorder_alert_threshold = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
+                $product->timely_product_status = 'matched';
+                $product->created_in_stocktake_id = $this->stocktakeId;
+                $product->save();
+            } else {
+                // record was found so update the returned product instance
+                $product->display_name = $import->product_name;
+                $product->barcode = $import->sku_handle;
+                $product->current_stock_available = is_numeric($import->stock_available) ? $import->stock_available : 0;
+                $product->current_cost_price = is_numeric($import->unit_cost_price) ? $import->unit_cost_price : 0;
+                $product->current_retail_price = is_numeric($import->unit_retail_price) ? $import->unit_retail_price : 0;
+                $product->reorder_alert_threshold = is_numeric($import->reorder_alert_threshold) ? $import->reorder_alert_threshold : 0;
+                $product->timely_product_status = 'matched';
+                $product->save();
+            }
         }
         $this->updateUnmatchedProductsToDeleted();
     }
@@ -227,17 +225,17 @@ class StocktakeController extends Controller
 
         DB::table('products')
             ->where('timely_product_status', 'active')
-            ->update(['timely_product_status' => 'deleted','deleted_in_stocktake_id' => $this->stocktakeId]);
+            ->update(['timely_product_status' => 'deleted', 'deleted_in_stocktake_id' => $this->stocktakeId]);
 
         DB::table('products')
-                ->where('timely_product_status', 'matched')
-                ->update(['timely_product_status' => 'active']);
+            ->where('timely_product_status', 'matched')
+            ->update(['timely_product_status' => 'active']);
     }
 
     private function getTimelyProductIndex($url)
     {
         $array = explode('/', $url);
 
-        return ($array[count($array)-1]);
+        return ($array[count($array) - 1]);
     }
 }
