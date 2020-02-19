@@ -20,7 +20,7 @@
 
 <body>
     <div id="app">
-        <div class="container">
+        <div>
 
             {{-- @include('partials.header') --}}
             @include('partials.navbar')

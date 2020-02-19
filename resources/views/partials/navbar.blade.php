@@ -5,7 +5,8 @@
         <img src={{ asset('image/scanlon-hair-icon.png') }} height="30" alt="Scanlon Hair">
     </a>
 
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
         <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -27,6 +28,10 @@
             <li class="{{ Request::is('stocktakes') ? 'nav-item active' : 'nav-item'}}">
                 <a class="nav-link" href="/stocktakes">Stocktakes</a>
             </li>
+
+            <li class="{{ Request::is('poh') ? 'nav-item active' : 'nav-item'}}">
+                <a class="nav-link" href="/poh">History</a>
+            </li>
         </ul>
 
         <!-- Right Side Of Navbar -->
@@ -41,7 +46,8 @@
             </li>
             @else
             <li class="nav-item dropdown">
-                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false" v-pre>
                     {{ Auth::user()->name }} <span class="caret"></span>
                 </a>
 
