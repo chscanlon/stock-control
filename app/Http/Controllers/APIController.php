@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Product;
 use Datatables;
 
@@ -16,16 +15,16 @@ class APIController extends Controller
     public function getProducts()
     {
         return datatables(Product::select(
-          'id',
-          'supplier',
-          'product_usage',
-          'product_range',
-                          'display_name',
-                          'current_max_stock',
-                          'current_stock_available'
-                          )->where([
-                            ['discontinued', 0],
-                            ['timely_product_status', 'active']
-                          ]))->toJson();
+            'id',
+            'supplier',
+            'product_usage',
+            'product_range',
+            'display_name',
+            'current_max_stock',
+            'current_stock_available'
+        )->where([
+            ['discontinued', 0],
+            ['timely_product_status', 'active'],
+        ]))->toJson();
     }
 }

@@ -45,7 +45,7 @@
 
     @endif
 
-    <h3 class="title">Items missing from order</h3>
+    <h3 class="title">Items with less delivered than ordered</h3>
     <table class="table table-sm">
         <tr>
             <th>Display Name</th>
@@ -66,6 +66,29 @@
         @endforeach
 
     </table>
+
+
+    <h3 class="title">Items with more delivered than ordered</h3>
+    <table class="table table-sm">
+        <tr>
+            <th>Display Name</th>
+            <th>Ordered Amount</th>
+            <th>Received Amount</th>
+        </tr>
+
+        @foreach ($order->orderItems as $orderItem)
+
+        @if ($orderItem->order_amount < $orderItem->delivered_amount)
+        <tr>
+            <td> {{$orderItem->display_name}} </td>
+            <td> {{$orderItem->order_amount}} </td>
+            <td> {{$orderItem->delivered_amount}} </td>
+        </tr>
+        @endif
+
+        @endforeach
+
+    </table>    
 
     <h3 class="title">Items correctly delivered</h3>
     <table class="table table-sm">
