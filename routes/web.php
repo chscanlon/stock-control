@@ -18,7 +18,7 @@ Auth::routes();
 Route::get('/poh', 'ProductController@orderHistory');
 Route::post('/poh', 'ProductController@orderHistory');
 
-Route::get('/home', 'HomeController@index');
+Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('products', 'ProductController');
 
@@ -33,3 +33,5 @@ Route::post('/order-check-in-delivery/{order}', 'OrderController@processOrderChe
 Route::get('/order-export-pdf/{order}', 'OrderController@exportPdf');
 
 Route::resource('stocktakes', 'StocktakeController');
+
+
