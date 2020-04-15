@@ -1,12 +1,27 @@
-@extends('layouts.master')
+@extends('layouts.app')
 @section('content')
 
+<div class="flex items-center">
+    <div class="md:w-3/4 md:mx-auto">
 
-<div class="container">
+        <div class="flex flex-col break-words bg-white border border-2 rounded shadow-md">
 
-    <h1 class="title">Order Detail</h1>
+            <div class=" py-3 px-6 mb-0 text-3xl font-semibold bg-gray-200 text-gray-700">
+                Order Detail
+            </div>
 
-    <table class="table table-sm">
+            <div class="w-full p-6">
+                <livewire:order-detail :order="$order">
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+    {{-- <table class="table table-sm">
         <tr>
             <th>Supplier</th>
             <td> {{$order->supplier}} </td>
@@ -24,41 +39,17 @@
             <td> {{$order->item_count}} </td>
         </tr>
 
-    </table>
+    </table> --}}
 
-    <div class="row my-2">
+    {{-- <div class="row my-2">
         <div class="col">
           <form action="/order-confirm/{{$order->id}}" method="post">
               @csrf
               <button type="submit" class="btn btn-secondary">Confirm Order</button>
           </form>
         </div>
-    </div>
+    </div> --}}
 
-    <table class="table table-sm">
-        <tr>
-            <th>Supplier</th>
-            <th>Display Name</th>
-            <th>Order Amount</th>
-            <th>Max Stock</th>
-            <th>Available Stock</th>
-        </tr>
-
-        @foreach ($order->orderItems as $orderItem)
-
-        <tr>
-            <td> {{$orderItem->supplier}} </td>
-            <td> {{$orderItem->display_name}} </td>
-            <td> {{$orderItem->order_amount}} </td>
-            <td> {{$orderItem->max_stock}} </td>
-            <td> {{$orderItem->available_stock}} </td>
-        </tr>
-
-        @endforeach
-
-    </table>
-
-</div>
 
 
 @endsection
