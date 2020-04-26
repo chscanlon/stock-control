@@ -2,48 +2,53 @@
     <table class="mx-auto table-auto border">
         <thead>
             <tr class="text-left">
-                <th class="p-2 border-r">
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500">
                     <a wire:click.prevent.="sortBy('id')" role="button" href="#">
                         Id
                         @include('partials.sort-icon', ['field' => 'id'])
                 </th>
-                <th class="p-2 border-r">Supplier</th>
-                <th class="p-2 border-r">Product Range</th>
-                <th class="p-2 border-r">
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500">Supplier</th>
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500">Product Range</th>
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500">
                     <a wire:click.prevent.="sortBy('display_name')" role="button" href="#">
                         Display Name
                         @include('partials.sort-icon', ['field' => 'display_name'])
                     </a>
 
                 </th>
-                <th class="p-2 border-r">
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500 text-center">
                     <a wire:click.prevent.="sortBy('supplier_sequence')" role="button" href="#">
-                        Supplier Sequence
+                        Supplier<br />Sequence
                         @include('partials.sort-icon', ['field' => 'supplier_sequence'])
                     </a>
                 </th>
-                <th class="p-2 border-r">Stock Available</th>
-                <th class="p-2 border-r">Restock Limit</th>
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500 text-center">
+                    Stock<br />Available
+                </th>
+                <th class="p-2 border-r uppercase tracking-wide text-sm font-bold text-gray-500 text-center">
+                    Restock<br />Limit</th>
                 <th class="p-2 border-r"></th>
             </tr>
             <tr>
                 <td class="border-r"></td>
                 <td class="border-r">
-                    <select name="supplierDropdown" wire:model="filterSupplier" class="border shadow p-2 bg-white">
+                    <select name="supplierDropdown" wire:model="filterSupplier"
+                        class="border shadow px-2 py-1 bg-white rounded text-sm">
                         @foreach($selectSupplier as $key => $value)
                         <option value={{ $key }}>{{ $value }}</option>
                         @endforeach
                     </select>
                 </td>
                 <td class="border-r">
-                    <select name="rangeDropdown" wire:model="filterRange" class="border shadow p-2 bg-white">
+                    <select name="rangeDropdown" wire:model="filterRange"
+                        class="border shadow px-2 py-1 bg-white rounded text-sm">
                         @foreach($selectRange as $key => $value)
                         <option value={{ $key }}>{{ $value }}</option>
                         @endforeach
                     </select>
                 </td>
-                <td class="border-r"><input class="my-2 ml-1 mr-4 p-2 border" wire:model="searchName" type="text"
-                        placeholder="Search product name..." /></td>
+                <td class="border-r"><input class="my-2 ml-1 mr-4 px-2 py-1 border rounded text-sm"
+                        wire:model="searchName" type="text" placeholder="Search product name..." /></td>
                 <td class="border-r"></td>
                 <td class="border-r"></td>
                 <td class="border-r"></td>
@@ -55,7 +60,11 @@
         <tbody>
 
             @foreach($products as $product)
+            @if ($product->discontinued)
+            <tr class="bg-gray-200">
+            @else
             <tr>
+            @endif
                 <td class="p-1 pl-2 border">{{ $product->id }}</td>
                 <td class="p-1 pl-2 border">{{ $product->supplier }}</td>
                 <td class="p-1 pl-2 border">{{ $product->product_range }}</td>
@@ -63,17 +72,24 @@
                 <td class="p-1 pl-2 border">
                     {{ $product->supplier_sequence }}
                 </td>
-                <td class="p-1 pl-2 border">{{ $product->current_stock_available }}</td>
-                <td class="p-1 pl-2 border">
-                    <button class=" mr-2 px-2 py-1 border bg-green-200"
-                        wire:click="incrementRestockLimit('{{$product->id}}')">+</button>
-                    {{ $product->current_max_stock }}
-                    <button class=" ml-2 px-2 py-1 border bg-red-200"
-                        wire:click="decrementRestockLimit('{{$product->id}}')">-</button>
+                <td class="p-1 pl-2 border text-center">{{ $product->current_stock_available }}</td>
+                <td class="p-1 border">
+                    <div class="flex justify-around items-center">
+                        <button class=" p-1 border border-green-900 bg-green-100 rounded"
+                            wire:click="incrementRestockLimit('{{$product->id}}')">+</button>
+                        {{ $product->current_max_stock }}
+                        <button class=" p-1 border border-red-900 bg-red-100 rounded"
+                            wire:click="decrementRestockLimit('{{$product->id}}')">-</button>
+                    </div>
+
                 </td>
                 <td>
-                    <button @click="open = true;" wire:click="$emit('editProduct', '{{$product->id}}')" type="button"
-                        class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-red-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-red-500 focus:outline-none focus:border-red-700 focus:shadow-outline-red transition ease-in-out duration-150 sm:text-sm sm:leading-5">
+                    <button @click="open = true;" wire:click="$emit('loadProduct', '{{$product->id}}')" type="button"
+                        class="inline-flex justify-center w-full rounded-md border border-transparent px-3 py-1
+                                     bg-indigo-900 text-base font-medium text-white shadow-sm
+                                    hover:bg-indigo-800
+                                    focus:outline-none focus:border-gray-700 focus:shadow-outline-gray
+                                    transition ease-in-out duration-150 sm:text-sm sm:leading-5">
                         Edit
                     </button>
                 </td>

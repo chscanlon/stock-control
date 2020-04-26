@@ -2,20 +2,23 @@
 
 namespace App\Http\Livewire;
 
+use App\Product;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Product;
 
 class SearchProducts extends Component
 {
     public $filterSupplier = 0;
-    public $filterRange = 0;
-    public $searchName = '';
+    public $filterRange    = 0;
+    public $searchName     = '';
     public $selectSupplier;
     public $selectRange;
     public $sortField = 'id';
-    public $sortAsc = true;
+    public $sortAsc   = true;
     private $products;
+
+    protected $listeners = ['productUpdated'];
+
 
     public function mount()
     {
@@ -25,8 +28,6 @@ class SearchProducts extends Component
         $this->selectSupplier = Product::pluck('supplier')->unique()->sort()->all();
         array_unshift($this->selectSupplier, 'Filter by supplier...');
 
-        //dd($this->selectRange);
-        //$this->buildFilterArray();
     }
 
     use WithPagination;
@@ -44,7 +45,7 @@ class SearchProducts extends Component
     public function sortBy($field)
     {
         if ($this->sortField === $field) {
-            $this->sortAsc = ! $this->sortAsc;
+            $this->sortAsc = !$this->sortAsc;
         } else {
             $this->sortAsc = true;
         }
@@ -52,33 +53,9 @@ class SearchProducts extends Component
         $this->sortField = $field;
     }
 
-    private function buildFilterArray()
+    public function productUpdated()
     {
-
-        $this->products = Product::where([
-            ['timely_product_status', 'active'],
-            ['display_name', 'LIKE', "%{$this->searchName}%"],
-        ])->when($this->filterRange > 0, function($query){
-            return $query->where('product_range', $this->selectRange[$this->filterRange]);
-        })->when($this->filterSupplier > 0, function($query){
-            return $query->where('supplier', $this->selectSupplier[$this->filterSupplier]);
-        });
-
-
-    }
-
-    public function toggleSort() {
-        switch ($this->sort) {
-            case 'O':
-                $this->sort = 'U';
-                break;
-            case "U":
-                $this->sort = 'D';
-                break;
-            case 'D':
-                $this->sort = 'O';
-                break;
-        }
+        $this->render();
     }
 
     public function render()
@@ -88,14 +65,14 @@ class SearchProducts extends Component
                 ['timely_product_status', 'active'],
                 ['display_name', 'LIKE', "%{$this->searchName}%"],
             ])
-            ->when($this->filterRange > 0, function($query){
-                return $query->where('product_range', $this->selectRange[$this->filterRange]);
-            })
-            ->when($this->filterSupplier > 0, function($query){
-                return $query->where('supplier', $this->selectSupplier[$this->filterSupplier]);
-            })
-            ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
-            ->paginate(10)
+                ->when($this->filterRange > 0, function ($query) {
+                    return $query->where('product_range', $this->selectRange[$this->filterRange]);
+                })
+                ->when($this->filterSupplier > 0, function ($query) {
+                    return $query->where('supplier', $this->selectSupplier[$this->filterSupplier]);
+                })
+                ->orderBy($this->sortField, $this->sortAsc ? 'asc' : 'desc')
+                ->paginate(10),
         ]);
     }
 }
